@@ -277,6 +277,20 @@ h1, .hero-title {
   border-radius: 4px;
   font-size: 0.8rem;
   font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tag-remove {
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.tag-remove:hover {
+  opacity: 1;
+  color: var(--text-color);
 }
 
 /* Create Page */

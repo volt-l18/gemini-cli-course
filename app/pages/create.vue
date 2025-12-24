@@ -1,10 +1,33 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { X } from 'lucide-vue-next'
 
 const foodOne = ref('')
 const foodTwo = ref('')
 const description = ref('')
-const tags = ref('')
+const tags = ref<string[]>([])
+const tagInput = ref('')
+
+const handleTagInput = () => {
+  if (tagInput.value.includes(',')) {
+    const parts = tagInput.value.split(',')
+    
+    parts.forEach(part => {
+      const trimmed = part.trim()
+      if (trimmed) {
+        if (!tags.value.includes(trimmed) && tags.value.length < 5) {
+          tags.value.push(trimmed)
+        }
+      }
+    })
+    
+    tagInput.value = ''
+  }
+}
+
+const removeTag = (index: number) => {
+  tags.value.splice(index, 1)
+}
 
 const handleSubmit = () => {
   if (!foodOne.value || !foodTwo.value || !description.value) {
@@ -16,7 +39,7 @@ const handleSubmit = () => {
     foodOne: foodOne.value,
     foodTwo: foodTwo.value,
     description: description.value,
-    tags: tags.value.split(',').map(tag => tag.trim()).filter(tag => tag),
+    tags: tags.value,
   };
 
   console.log('New Combo Data:', comboData)
@@ -25,7 +48,8 @@ const handleSubmit = () => {
   foodOne.value = ''
   foodTwo.value = ''
   description.value = ''
-  tags.value = ''
+  tags.value = []
+  tagInput.value = ''
 };
 </script>
 
@@ -65,9 +89,18 @@ const handleSubmit = () => {
         <input
           type="text"
           id="tags"
-          v-model="tags"
+          v-model="tagInput"
+          @input="handleTagInput"
           placeholder="e.g. sweet, savory, crunchy"
+          :disabled="tags.length >= 5"
         />
+        <div class="combo-tags" v-if="tags.length > 0" style="margin-top: 0.5rem;">
+          <span v-for="(tag, index) in tags" :key="tag" class="tag">
+            {{ tag }}
+            <X :size="14" class="tag-remove" @click="removeTag(index)" />
+          </span>
+        </div>
+        <small v-if="tags.length >= 5" style="color: var(--secondary-accent-color); font-size: 0.8rem; margin-top: 0.2rem; display: block;">Max 5 tags reached.</small>
       </div>
       <button type="submit" class="btn submit-btn">Create Combo</button>
     </form>
